@@ -290,13 +290,13 @@ configuration ConfigureSPVM
                 DependsOn         = "[Script]DownloadSharePoint"
             }
 
-            SPInstall InstallBinaries
+            <# SPInstall InstallBinaries
             {
                 IsSingleInstance = "Yes"
                 BinaryDir        = "${env:windir}\Temp\OfficeServer"
                 ProductKey       = "VW2FM-FN9FT-H22J4-WV9GT-H8VKF"
                 DependsOn        = "[SPInstallPrereqs]InstallPrerequisites"
-            }
+            } #>
         }
 
         #**********************************************************
@@ -592,6 +592,7 @@ configuration ConfigureSPVM
             DependsOn            = "[SqlAlias]AddSqlAlias", "[File]AccountsProvisioned"
         }
 
+	<#
         #**********************************************************
         # Create SharePoint farm
         #**********************************************************
@@ -744,7 +745,7 @@ configuration ConfigureSPVM
             PsDscRunAsCredential   = $SPSetupCredsQualified
             DependsOn              = "[xScript]RestartSPTimerAfterCreateSPFarm"
         }
-
+	#>
         # Update GPO to ensure the root certificate of the CA is present in "cert:\LocalMachine\Root\", otherwise certificate request will fail
         xScript UpdateGPOToTrustRootCACert
         {
@@ -787,6 +788,7 @@ configuration ConfigureSPVM
             DependsOn              = "[xScript]UpdateGPOToTrustRootCACert"
         }
 
+	<#
         # Installing LDAPCP somehow updates SPClaimEncodingManager 
         # But in SharePoint 2019 (only), it causes an UpdatedConcurrencyException on SPClaimEncodingManager in SPTrustedIdentityTokenIssuer resource
         # The only solution I've found is to force a reboot in SharePoint 2019
@@ -1371,7 +1373,7 @@ configuration ConfigureSPVM
             DependsOn                      = "[xScript]ExportHighTrustAddinsCert"
             PsDscRunAsCredential           = $SPSetupCredsQualified
         }
-
+	#>
         # DSC resource File throws an access denied when accessing a remote location, so use xScript instead
         xScript CreateDSCCompletionFile
         {
